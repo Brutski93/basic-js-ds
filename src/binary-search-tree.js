@@ -58,29 +58,88 @@ class BinarySearchTree {
 
   remove(data) {
     if (!this.find(data)) return;
-    if (this.start.data === data) {
-      this.start = null;
+    if (this.start.data === data) { // special case
+      if (!this.start.left && !toDethis.startlete.right) {
+        this.start = null;
+        return;
+      }
+      if (this.start.left && !this.start.right) {
+        this.start = this.start.left;
+        return;
+      }
+      if (!this.start.left && this.start.right) {
+        this.start = this.start.right;
+        return;
+      }
+      let currentNode = this.start.right;
+      let parentNode = this.start;
+      let min = currentNode.data;
+      while (currentNode.left) {
+        min = currentNode.left.data;
+        parentNode = currentNode;
+        currentNode = currentNode.left;
+      }
+      this.start.data = min;
+      if (min === this.start.right.data) {
+        this.start.right = this.start.right.right;
+        return;
+      }
+      if (currentNode.right) parentNode.left = currentNode.right;
+      else parentNode.left = null;
       return;
     }
 
-    function deleteNode2(obj, data) {
+    function deleteNodeStep1(obj, data) {
       if (obj.data > data) {
         if (obj.left.data === data) {
-          obj.left = null;
+          deleteNodeStep2(obj, obj.left);
           return;
         }
-        deleteNode2(obj.left, data);
+        deleteNodeStep1(obj.left, data);
       }
       else {
         if (obj.right.data === data) {
-          obj.right = null;
+          deleteNodeStep2(obj, obj.right, false);
           return;
         }
-        deleteNode2(obj.right, data);
+        deleteNodeStep1(obj.right, data);
       }
     }
+    function deleteNodeStep2(parent, toDelete, left = true) { // by default toDelete is left 
+      if (!toDelete.left && !toDelete.right) {
+        if (left) parent.left = null;
+        else parent.right = null;
+        return;
+      }
+      if (toDelete.left && !toDelete.right) {
+        if (left) parent.left = toDelete.left;
+        else parent.right = toDelete.left;
+        return;
+      }
+      if (!toDelete.left && toDelete.right) {
+        if (left) parent.left = toDelete.right;
+        else parent.right = toDelete.right;
+        return;
+      }
 
-    deleteNode2(this.start, data);
+      let currentNode = toDelete.right;
+      let parentNode = toDelete;
+      let min = currentNode.data;
+      while (currentNode.left) {
+        min = currentNode.left.data;
+        parentNode = currentNode;
+        currentNode = currentNode.left;
+      }
+      toDelete.data = min;
+      if (min === toDelete.right.data) {
+        toDelete.right = toDelete.right.right;
+        return;
+      }
+      if (currentNode.right) parentNode.left = currentNode.right;
+      else parentNode.left = null;
+    }
+
+    deleteNodeStep1(this.start, data);
   }
 
   min(start = this.start) {
@@ -105,7 +164,10 @@ class BinarySearchTree {
     return max;
   }
   visual(obj = this.start) {
-    if (!this.start) return;
+    if (!this.start) {
+      console.log(`Node: ${obj} left: no right: no`);
+      return;
+    }
     let left = null;
     let right = null;
     if (obj.left) left = obj.left.data;
@@ -120,22 +182,26 @@ module.exports = {
   BinarySearchTree
 };
 
-const tree = new BinarySearchTree();
-      tree.add(9);
-      tree.add(14);
-      tree.add(2);
-      tree.add(6);
-      tree.add(128);
-      tree.add(8);
-      tree.add(31);
-      tree.add(54);
-      tree.add(1);
-      tree.remove(14);
-      tree.visual()
-      tree.remove(8);
-      tree.visual()
-      tree.remove(9);
-      tree.visual()
-console.log(
-  tree
-);
+// const tree = new BinarySearchTree();
+//       tree.add(9);
+//       tree.add(14);
+//       tree.add(2);
+//       tree.add(6);
+//       tree.add(128);
+//       tree.add(8);
+//       tree.add(31);
+//       tree.add(54);
+//       tree.add(1);
+//       tree.visual()
+//       console.log('removing 14');
+//       tree.remove(14);
+//       tree.visual()
+//       console.log('removing 8');
+//       tree.remove(8);
+//       tree.visual()
+//       console.log('removing 9');
+//       tree.remove(9);
+//       tree.visual()
+// console.log(
+  // tree
+// );
